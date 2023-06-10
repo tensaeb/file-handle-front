@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { Button, IconButton, Stack } from "@mui/material";
+//mui
+import { Button, IconButton, Snackbar, Stack } from "@mui/material";
 //icons
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CheckIcon from "@mui/icons-material/Check";
+//hooks
+import { useAppDispatch } from "../redux/redux-hooks";
+import { uploadFile } from "../redux/item-actions";
 
 const FileUpload: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [errorSnackbarOpen, setErrorSnackbarOpen] = useState(false);
+  const [successSnackbarOpen, setSuccessSnackbarOpen] = useState(false);
+  const dispatch = useAppDispatch();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -17,6 +24,24 @@ const FileUpload: React.FC = () => {
 
   const handleDeleteFile = () => {
     setSelectedFile(null);
+  };
+
+  const handleUploadFile = () => {
+    if (selectedFile) {
+      dispatch(uploadFile(selectedFile))
+        .then(() => {
+          setSelectedFile(null);
+          setSuccessSnackbarOpen(true);
+        })
+        .catch(() => {
+          setErrorSnackbarOpen(true);
+        });
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setErrorSnackbarOpen(false);
+    setSuccessSnackbarOpen(false);
   };
 
   return (
@@ -42,7 +67,7 @@ const FileUpload: React.FC = () => {
             </IconButton>
             <IconButton aria-label="delete" size="small">
               <CheckIcon
-                onClick={handleDeleteFile}
+                onClick={handleUploadFile}
                 fontSize="small"
                 sx={{ color: "lightgreen" }}
               />
@@ -50,6 +75,22 @@ const FileUpload: React.FC = () => {
           </Stack>
         </Stack>
       )}
+      <Snackbar
+        open={errorSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message="Error uploading file"
+        sx={{ backgroundColor: "red" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
+      <Snackbar
+        open={successSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        message="File uploaded successfully"
+        sx={{ backgroundColor: "green" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
     </Stack>
   );
 };

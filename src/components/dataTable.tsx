@@ -7,8 +7,13 @@ import {
 import Action from "./Action";
 
 export const columns: GridColDef[] = [
-  { field: "itemNo", headerName: "Item No.", width: 100, editable: true },
-  { field: "desc", headerName: "Description", width: 580, editable: true },
+  { field: "item_no", headerName: "Item No.", width: 100, editable: true },
+  {
+    field: "description",
+    headerName: "Description",
+    width: 580,
+    editable: true,
+  },
   {
     field: "qty",
     headerName: "Quantity",
